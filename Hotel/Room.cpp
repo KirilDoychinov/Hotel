@@ -6,12 +6,25 @@ Room::Room(int number, int capacity) : number(number), capacity(capacity), reser
 Room::~Room() {
 }
 
-void reserve(tm start, tm end, std::string note, int numberOfGuests);
+void Room::reserve(const Date& start, const Date& end, const std::string& note) {
 
-bool isFree(tm date);
+}
 
-bool isFree(tm start, tm end);
+void reserve(const Date& start, const Date& end, std::string& note, int numberOfGuests) {
 
-void free();
+}
 
-int countDaysInUse(tm start, tm end);
+bool isFree(const Date& date) {
+	return true;
+
+}
+
+bool isFree(const Date& start, const Date& end) {
+	return true;
+
+}
+
+int countDaysInUse(const Date& start, const Date& end) {
+
+	return 0;
+}

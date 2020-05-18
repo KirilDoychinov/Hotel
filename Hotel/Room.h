@@ -2,8 +2,8 @@
 #define ROOM_H
 
 #include "Reservation.h"
+#include "Date.h"
 #include <vector>
-#include <ctime>
 #include <string>
 
 class Room
@@ -13,16 +13,15 @@ public:
 	Room(int, int);
 	~Room();
 
-	void reserve(tm start, tm end, std::string note, int numberOfGuests);
+	void reserve(const Date&, const Date&, const std::string&);
 
-	bool isFree(tm date);
+	void reserve(const Date&, const Date&, const std::string&, int);
 
-	bool isFree(tm start, tm end);
+	bool isFree(const Date&);
 
-	int countDaysInUse(tm start, tm end);
+	bool isFree(const Date& start, const Date& end);
 
-
-
+	int countDaysInUse(const Date& start, const Date& end);
 
 private:
 	int number;

@@ -1,8 +1,12 @@
 #include "Date.h"
+#include <algorithm>
 
 void adjustLeapYears(long&, const Date&);
 
 Date::Date(int d, int m, int y) : day(d), month(m), year(y) {
+}
+
+Date::Date(const Date& other) : day(other.day), month(other.month), year(other.year) {
 }
 
 Date::~Date() {
@@ -20,12 +24,6 @@ int Date::getYear() const {
 	return this->year;
 }
 
-std::ostream& operator<<(std::ostream& os, const Date& dt)
-{
-	os << dt.year << '-' << dt.month << '-' << dt.day;
-	return os;
-}
-
 bool Date::operator <(const Date& dt) const {
 	if (year < dt.year)
 		return true;
@@ -41,6 +39,12 @@ bool Date::operator==(const Date& dt) const {
 
 bool Date::operator!=(const Date& dt) const {
 	return !(*this == dt);
+}
+
+Date& Date::operator=(Date other)
+{
+	swap(*this, other);
+	return *this;
 }
 
 int  Date::duration(const Date& dt) const {
@@ -66,4 +70,15 @@ void adjustLeapYears(long& days, const Date& date) {
 	days += year / 4 - year / 100 + year / 400;
 }
 
+std::ostream& operator<<(std::ostream& os, const Date& dt)
+{
+	os << dt.year << '-' << dt.month << '-' << dt.day;
+	return os;
+}
+
+void swap(Date& first, Date& second) {
+	std::swap(first.day, second.day);
+	std::swap(first.month, second.month);
+	std::swap(first.year, second.year);
+}
 
