@@ -13,15 +13,19 @@ public:
 	int getDay() const;
 	int getMonth() const;
 	int getYear() const;
-	int duration(const Date&) const;
 
-	bool operator <(const Date&) const;
-	bool operator==(const Date&) const;
-	bool operator!=(const Date&) const;
-	Date& operator=(Date other);
+	friend bool operator <(const Date&, const Date&);
+	friend bool operator >(const Date&, const Date&);
+	friend bool operator<=(const Date&, const  Date&);
+	friend bool operator>=(const  Date&, const  Date&);
+	friend bool operator==(const Date&, const Date&);
+	friend bool operator!=(const Date&, const Date&);
+	
+	Date& operator=(Date);
 
 	friend std::ostream& operator<<(std::ostream&, const Date&);
 	friend void swap(Date& first, Date& second);
+	friend int duration(const Date&, const Date&);
 
 private:
 	int day;

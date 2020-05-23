@@ -22,6 +22,16 @@ std::string Reservation::getNote() const {
 	return note;
 }
 
-int Reservation::duration() const {
-	return start.duration(end);
+int Reservation::calculateDuration() const {
+	return duration(start, end);
 }
+
+std::ostream& operator<<(std::ostream& os, const Reservation& reservation) {
+
+	os << "{";
+	os << reservation.getStart() << " " << reservation.getEnd() << reservation.getNote() << " " << reservation.getGuests();
+	os << "}";
+
+	return os;
+}
+

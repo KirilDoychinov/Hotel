@@ -24,42 +24,25 @@ int Date::getYear() const {
 	return this->year;
 }
 
-bool Date::operator <(const Date& dt) const {
-	if (year < dt.year)
-		return true;
-	if (year == dt.year && (month < dt.month || (month == dt.month && day < dt.day)))
-		return true;
-
-	return false;
-}
-
-bool Date::operator==(const Date& dt) const {
-	return year == dt.year && month == dt.month && day == dt.day;
-}
-
-bool Date::operator!=(const Date& dt) const {
-	return !(*this == dt);
-}
-
 Date& Date::operator=(Date other)
 {
 	swap(*this, other);
 	return *this;
 }
 
-int  Date::duration(const Date& dt) const {
+int  duration(const Date& lhs, const Date& rhs) {
 	const int monthDays[12] = { 31, 28, 31, 30, 31, 30,
 							   31, 31, 30, 31, 30, 31 };
 
-	long int totalDays1 = this->year * 365 + this->day, totalDays2 = dt.year * 365 + dt.day;
+	long int lhsDaysElapsed = lhs.year * 365 + lhs.day, rhsDaysElapsed = rhs.year * 365 + rhs.day;
 
-	for (int i = 0; i < this->month - 1; ++i)
-		totalDays1 += monthDays[i];
+	for (int i = 0; i < lhs.month - 1; ++i)
+		lhsDaysElapsed += monthDays[i];
 
-	adjustLeapYears(totalDays1, *this);
-	adjustLeapYears(totalDays2, dt);
+	adjustLeapYears(lhsDaysElapsed, lhs);
+	adjustLeapYears(rhsDaysElapsed, rhs);
 
-	return abs(totalDays1 - totalDays2);
+	return abs(lhsDaysElapsed - rhsDaysElapsed);
 }
 
 void adjustLeapYears(long& days, const Date& date) {
@@ -82,3 +65,30 @@ void swap(Date& first, Date& second) {
 	std::swap(first.year, second.year);
 }
 
+bool operator <(const Date& lhs, const Date& rhs) {
+	if (lhs.year < rhs.year ||
+		(lhs.year == rhs.year && lhs.month < rhs.month) ||
+		(lhs.year == rhs.year && lhs.month == rhs.month && lhs.day < rhs.day))
+		return true;
+	return false;
+}
+
+bool operator >(const Date& lhs, const Date& rhs) {
+	return rhs < lhs;
+}
+
+bool operator<=(const Date& lhs, const  Date& rhs) {
+	return !(lhs > rhs);
+}
+
+bool operator>=(const  Date& lhs, const  Date& rhs) {
+	return !(lhs < rhs);
+}
+
+bool operator ==(const Date& lhs, const Date& rhs) {
+	return lhs.day == rhs.day && lhs.month == rhs.month && lhs.year == rhs.year;
+}
+
+bool operator !=(const Date& lhs, const Date& rhs) {
+	return !(lhs == rhs);
+}

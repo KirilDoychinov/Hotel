@@ -2,6 +2,7 @@
 #define RESERVATION_H
 
 #include "Date.h"
+#include <fstream>
 #include <string>
 
 class Reservation
@@ -15,7 +16,9 @@ public:
 	int getGuests() const;
 	std::string getNote() const;
 
-	int duration() const;
+	int calculateDuration() const;
+
+	friend std::ostream& operator<<(std::ostream&, const Reservation&);
 	
 private:
 	Date start;
