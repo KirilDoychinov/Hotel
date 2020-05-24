@@ -1,5 +1,5 @@
 #include "ControlPanel.h"
-#include "StringUtils.h"
+#include "Utils.h"
 #include <iostream>
 #include <string>
 #include <functional>
@@ -10,13 +10,13 @@
 bool validateFileExtension(const std::string&);
 bool validateFileName(const std::string&);
 
-//ControlPanel::ControlPanel() :table(nullptr), file("") {
-//}
-//
-//ControlPanel::~ControlPanel() {
-//	if (table != nullptr)
-//		delete table;
-//}
+ControlPanel::ControlPanel() :rooms(nullptr), file("") {
+}
+
+ControlPanel::~ControlPanel() {
+	if (rooms != nullptr)
+		delete rooms;
+}
 
 void ControlPanel::start() {
 	std::cout << "Open a text file (.txt) to read: (open <file>.txt)" << std::endl;
@@ -44,20 +44,15 @@ void ControlPanel::exit() {
 	std::exit(0);
 }
 
-//void ControlPanel::close() {
-//	if (table != nullptr) {
-//		delete table;
-//		table = nullptr;
-//	}
-//
-//	std::cout << "Succesfully closed current file!" << std::endl;
-//	file = "";
-//}
+void ControlPanel::close() {
+	if (rooms != nullptr) {
+		delete rooms;
+		rooms = nullptr;
+	}
 
-//void ControlPanel::print() const {
-//	if (table != nullptr)
-//		table->print();
-//}
+	std::cout << "Succesfully closed current file!" << std::endl;
+	file = "";
+}
 
 void ControlPanel::open(const std::string& file) {
 	std::fstream myFile(file, std::ios::app);
@@ -70,7 +65,6 @@ void ControlPanel::open(const std::string& file) {
 
 	else
 		std::cout << "Error opening the file!" << std::endl;
-
 }
 
 
@@ -135,20 +129,21 @@ void ControlPanel::open(const std::string& file) {
 //	}
 //}
 
-//void ControlPanel::save() {
-//	assert(!file.empty());
-//
-//	std::fstream myFile(file, std::ios::out | std::ios::trunc);
-//
-//	if (myFile.is_open()) {
-//		myFile << *table;
-//		myFile.close();
-//		std::cout << "Table saved successfully!" << std::endl;
-//	}
-//
-//	else
-//		std::cout << "Error opening the file!" << std::endl;
-//}
+void ControlPanel::save() {
+	assert(!file.empty());
+
+	std::fstream myFile(file, std::ios::out | std::ios::trunc);
+
+	if (myFile.is_open()) {
+		for()
+		myFile << *table;
+		myFile.close();
+		std::cout << "Table saved successfully!" << std::endl;
+	}
+
+	else
+		std::cout << "Error opening the file!" << std::endl;
+}
 
 //void ControlPanel::saveAs(const std::string& file) {
 //	std::ofstream myFile(file, std::ios::out | std::ios::trunc);

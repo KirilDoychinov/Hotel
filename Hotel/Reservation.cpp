@@ -1,7 +1,7 @@
 #include "Reservation.h"
 
 Reservation::Reservation(const Date& start, const Date& end, const std::string& note, int guests) :
-	start(start), end(end), note(note), guests(guests) {
+	start(start), end(end), note(note), guests(guests), activities(std::set<Activity>()) {
 }
 
 Reservation::~Reservation() {
@@ -22,8 +22,16 @@ std::string Reservation::getNote() const {
 	return note;
 }
 
+std::set<Activity>  Reservation::getActivities() const {
+	return activities;
+}
+
 int Reservation::calculateDuration() const {
 	return duration(start, end);
+}
+
+void  Reservation::addActivity(Activity& activity) {
+	activities.insert(activity);
 }
 
 std::ostream& operator<<(std::ostream& os, const Reservation& reservation) {

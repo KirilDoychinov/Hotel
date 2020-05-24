@@ -7,17 +7,25 @@ Room::Room(int number, int capacity) : number(number), capacity(capacity), reser
 Room::~Room() {
 }
 
-bool Room::reserve(const Date& start, const Date& end, const std::string& note, int numberOfGuests = 0) {
-	Reservation* newReservation = new Reservation(start, end, note, numberOfGuests);
+int Room::getNumber() const {
+	return number;
+}
+
+int Room::getCapacity() const {
+	return capacity;
+}
+
+bool Room::reserve(Reservation* reservation) {
+	Date start = reservation->getStart(), end = reservation->getEnd();
 
 	if (reservations.empty() || reservations.back()->getEnd < start)
-		reservations.push_back(newReservation);
+		reservations.push_back(reservation);
 
 	else
 		for (int i = 0; i < reservations.size(); ++i) {
 			Reservation* reservation = reservations[i];
 			if (end < reservation->getStart()) {
-				reservations.insert(reservations.begin() + i, newReservation);
+				reservations.insert(reservations.begin() + i, reservation);
 				break;
 			}
 			if (start <= reservation->getEnd())
@@ -70,6 +78,16 @@ int Room::countDaysInUse(const Date& start, const Date& end) {
 	return days;
 }
 
+Reservation* Room::getCurrentReservation() {
+	Date today = *Date::today();
+	for (Reservation* reservation : reservations) {
+		if (reservation->getStart() <= today && today <= reservation->getEnd())
+			return  reservation;
+	}
+
+	return nullptr;
+}
+
 std::ostream& operator<<(std::ostream& os, const Room& room) {
 
 	os << room.number << " " << room.capacity << " {";
@@ -86,3 +104,21 @@ std::ostream& operator<<(std::ostream& os, const Room& room) {
 
 	return os;
 }
+
+void Room::free() {
+	Date today = *Date::today();
+	int currentReservationIndex = -1;
+
+	for (size_t i = 0; i < reservations.size(); ++i) {
+		Reservation* current = reservations.at(i);
+		if (current->getStart() <= today && today <= current->getEnd()) {
+			currentReservationIndex = i;
+			break;
+		}
+	}
+
+	if (currentReservationIndex != -1)
+		reservations.erase(reservations.begin() + currentReservationIndex);
+}
+
+

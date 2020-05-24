@@ -1,5 +1,6 @@
 #include "Date.h"
 #include <algorithm>
+#include <ctime>
 
 void adjustLeapYears(long&, const Date&);
 
@@ -91,4 +92,15 @@ bool operator ==(const Date& lhs, const Date& rhs) {
 
 bool operator !=(const Date& lhs, const Date& rhs) {
 	return !(lhs == rhs);
+}
+
+Date* Date::today() {
+	time_t now = std::time(0);
+	tm* time = std::localtime(&now);
+
+	int year = 1900 + time->tm_year;
+	int month = 1 + time->tm_mon;
+	int day = time->tm_mday;
+
+	return new Date(day, month, year);
 }

@@ -27,6 +27,8 @@ public:
 	friend void swap(Date& first, Date& second);
 	friend int duration(const Date&, const Date&);
 
+	static Date* today();
+
 private:
 	int day;
 	int month;

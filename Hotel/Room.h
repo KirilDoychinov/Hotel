@@ -13,10 +13,15 @@ public:
 	Room(int, int);
 	~Room();
 
-	bool reserve(const Date&, const Date&, const std::string&, int = 0);
+	int getNumber() const;
+	int getCapacity() const;
+
+	bool reserve( Reservation*);
 	bool isFree(const Date&);
 	bool isFree(const Date& start, const Date& end);
+	void free();
 	int countDaysInUse(const Date& start, const Date& end);
+	Reservation* getCurrentReservation();
 
 	friend std::ostream& operator<<(std::ostream&, const Room&);
 
