@@ -1,12 +1,14 @@
 #ifndef CONTROL_PANEL_H
 #define CONTROL_PANEL_H
 
+#include "Hotel.h"
+
 #include <iostream>
 #include <string>
 #include <functional>
 #include <map>
 #include <cassert>
-#include "Room.h"
+
 
 class ControlPanel
 {
@@ -17,7 +19,7 @@ public:
 	void start();
 
 private:
-	Room* rooms;
+	Hotel* hotel;
 	std::string file;
 
 	const std::map<std::string, std::function<void(void)>>  functions = {
@@ -30,13 +32,14 @@ private:
 	void help() const;
 	void exit();
 	void close();
-
 	void open(const std::string&);
 	void readFile(const std::string&);
 	void save();
 	void saveAs(const std::string&);
 	bool validateFile(const std::string&);
 	void executeCommand(std::string&);
+	void readLine(std::string&);
+	void generateHotelRooms();
 
 };
 

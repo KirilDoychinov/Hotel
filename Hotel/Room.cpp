@@ -4,6 +4,9 @@
 Room::Room(int number, int capacity) : number(number), capacity(capacity), reservations(std::vector<Reservation*>()) {
 }
 
+Room::Room(int number, int capacity, std::vector<Reservation*>& reservations) : number(number), capacity(capacity), reservations(reservations) {
+}
+
 Room::~Room() {
 }
 
@@ -15,10 +18,14 @@ int Room::getCapacity() const {
 	return capacity;
 }
 
+std::vector<Reservation*> Room::getReservations() const {
+	return reservations;
+}
+
 bool Room::reserve(Reservation* reservation) {
 	Date start = reservation->getStart(), end = reservation->getEnd();
 
-	if (reservations.empty() || reservations.back()->getEnd < start)
+	if (reservations.empty() || reservations.back()->getEnd() < start)
 		reservations.push_back(reservation);
 
 	else
@@ -90,18 +97,16 @@ Reservation* Room::getCurrentReservation() {
 
 std::ostream& operator<<(std::ostream& os, const Room& room) {
 
-	os << room.number << " " << room.capacity << " {";
+	std::string separator = " ";
+	os << room.number << separator << room.capacity;
 
 	size_t len = room.reservations.size();
 	for (size_t i = 0; i < len; ++i) {
 		Reservation* current = room.reservations.at(i);
-		os << current;
-		if (i != len - 1)
-			os << ",";
+		os << separator << current;
 	}
 
-	os << "}" << std::endl;
-
+	os << std::endl;
 	return os;
 }
 

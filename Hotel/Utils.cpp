@@ -32,19 +32,19 @@ bool Utils::isLeapYear(int year) {
 	return true;
 }
 
-bool Utils::isDate(const std::string& str) {
+std::optional<Date*> Utils::isDate(const std::string& str) {
 	if (str.size() != 10)
-		return false;
+		return std::nullopt;
 
 	for (size_t i = 0; i < 10; ++i) {
 		char ch = str.at(i);
 
 		if (i == 4 || i == 7) {
 			if (ch != '-')
-				return false;
+				std::nullopt;
 		}
 		else if (!isDigit(ch))
-			return false;
+			return std::nullopt;
 	}
 
 	int year = std::stoi(str.substr(0, 4));
@@ -52,15 +52,39 @@ bool Utils::isDate(const std::string& str) {
 	int day = std::stoi(str.substr(8, 2));
 
 	if (year < 1 || month < 1 || day < 1 || month > 12 || day > 31)
-		return false;
+		return std::nullopt;
 
 	if (month % 2 == 0) {
 		int maxDays = 30;
 		if (month == 2)
 			maxDays = isLeapYear(year) ? 29 : 28;
 		if (day > maxDays)
-			return false;
+			return std::nullopt;
 	}
 
-	return true;
+	return new Date(day, month, year);
+}
+
+std::optional<Reservation*>  Utils::isReservation(const std::string& str) {
+	if (str.size() < 26 || str.at(10) != ' ' || str.at(21) != ' ' || str.at(22) != '"')
+		return  std::nullopt;
+
+	auto date1 = isDate(str.substr(0, 10)), date2 = isDate(str.substr(11, 10));
+
+	if (!date1.has_value() || !date2.has_value())
+		return  std::nullopt;
+
+	Date *start = date1.value(), *end = date2.value();
+
+	size_t lastQuotePos = str.find_last_of("\"");
+	if (lastQuotePos == 22 || lastQuotePos > str.size() - 3 || str.at(lastQuotePos + 1) != ' ')
+		return  std::nullopt;
+
+	std::string note = str.substr(23, lastQuotePos - 23);
+
+	std::string capacity = str.substr(lastQuotePos + 2);
+	if (!isNaturalNumber(capacity))
+		return  std::nullopt;
+
+	return new Reservation(*start, *end, note, std::stoi(capacity));
 }

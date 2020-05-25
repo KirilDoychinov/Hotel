@@ -10,6 +10,10 @@ Hotel::~Hotel() {
 		delete room;
 }
 
+bool Hotel::empty() const {
+	return rooms.size() == 0;
+}
+
 void Hotel::addRoom(Room* room) {
 	rooms.push_back(room);
 }
@@ -85,4 +89,6 @@ void Hotel::printAllSubscribedFor(Activity& activity) {
 std::ostream& operator<<(std::ostream& os, const Hotel& hotel) {
 	for (auto* room : hotel.rooms)
 		os << *room;
+
+	return os;
 }

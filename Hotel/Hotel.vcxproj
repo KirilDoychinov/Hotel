@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Activity.h" />
     <ClInclude Include="ControlPanel.h" />
     <ClInclude Include="Date.h" />
     <ClInclude Include="Hotel.h" />
@@ -151,6 +152,7 @@
     <ResourceCompile Include="Hotel.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Activity.cpp" />
     <ClCompile Include="ControlPanel.cpp" />
     <ClCompile Include="Date.cpp" />
     <ClCompile Include="Hotel.cpp" />

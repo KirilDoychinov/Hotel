@@ -46,14 +46,6 @@ int  duration(const Date& lhs, const Date& rhs) {
 	return abs(lhsDaysElapsed - rhsDaysElapsed);
 }
 
-void adjustLeapYears(long& days, const Date& date) {
-	if (date.getMonth() <= 2)
-		--days;
-
-	int year = date.getYear();
-	days += year / 4 - year / 100 + year / 400;
-}
-
 std::ostream& operator<<(std::ostream& os, const Date& dt)
 {
 	os << dt.year << '-' << dt.month << '-' << dt.day;
@@ -103,4 +95,12 @@ Date* Date::today() {
 	int day = time->tm_mday;
 
 	return new Date(day, month, year);
+}
+
+void adjustLeapYears(long& days, const Date& date) {
+	if (date.getMonth() <= 2)
+		--days;
+
+	int year = date.getYear();
+	days += year / 4 - year / 100 + year / 400;
 }

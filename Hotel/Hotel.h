@@ -14,14 +14,14 @@ public:
 	void addRoom(Room*);
 	Room* findRoom(int);
 	void addReservation(int, Reservation*);
-	void availability(const Date& );
+	void availability(const Date&);
 	void checkout(int);
-	void report(const Date& , const Date& );
+	void report(const Date&, const Date&);
 	int findRoom(int, const Date&, const Date&);
 	void printRoomActivities(int);
-	void printAllSubscribedFor(Activity&)
+	void printAllSubscribedFor(Activity&);
 
-
+	bool empty() const;
 
 	friend std::ostream& operator<<(std::ostream&, const Hotel&);
 

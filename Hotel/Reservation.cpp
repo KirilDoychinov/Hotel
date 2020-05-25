@@ -35,9 +35,10 @@ void  Reservation::addActivity(Activity& activity) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Reservation& reservation) {
+	std::string separator = " ";
 
 	os << "{";
-	os << reservation.getStart() << " " << reservation.getEnd() << reservation.getNote() << " " << reservation.getGuests();
+	os << reservation.getStart() << separator << reservation.getEnd() << separator << "\"" << reservation.getNote() << "\" " << separator << reservation.getGuests();
 	os << "}";
 
 	return os;

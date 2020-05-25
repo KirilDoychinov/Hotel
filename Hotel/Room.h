@@ -11,10 +11,12 @@ class Room
 
 public:
 	Room(int, int);
+	Room(int, int, std::vector<Reservation*>&);
 	~Room();
 
 	int getNumber() const;
 	int getCapacity() const;
+	std::vector<Reservation*> getReservations() const;
 
 	bool reserve( Reservation*);
 	bool isFree(const Date&);

@@ -30,7 +30,6 @@ private:
 	int guests;
 	std::string note;
 	std::set<Activity> activities;
-
 };
 
 #endif
