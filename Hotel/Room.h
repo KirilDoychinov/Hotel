@@ -10,22 +10,21 @@ class Room
 {
 
 public:
-	Room(int, int);
-	Room(int, int, std::vector<Reservation*>&);
+	Room(int number, int capacity);
 	~Room();
 
 	int getNumber() const;
 	int getCapacity() const;
-	std::vector<Reservation*> getReservations() const;
-
-	bool reserve( Reservation*);
-	bool isFree(const Date&);
-	bool isFree(const Date& start, const Date& end);
+	const std::vector<Reservation*>& getReservations() const;
+	bool reserve(Date* start, Date* end, std::string& note, int guests);
+	bool isFree(Date* date) const;
+	bool isFree(Date* start, Date* end) const;
 	void free();
-	int countDaysInUse(const Date& start, const Date& end);
-	Reservation* getCurrentReservation();
+	int countDaysInUse(Date* start, Date* end) const;
+	Reservation* getCurrentReservation() const;
+	void subscribe(std::string& activity);
 
-	friend std::ostream& operator<<(std::ostream&, const Room&);
+	friend std::ostream& operator<<(std::ostream& os, const Room& room);
 
 private:
 	int number;

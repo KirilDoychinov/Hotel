@@ -10,23 +10,23 @@
 class Reservation
 {
 public:
-	Reservation(const Date&, const Date& , const std::string&, int = 0);
+	Reservation(Date* start, Date* end, std::string& note, int guests = 0);
 	~Reservation();
 
-	Date getStart() const;
-	Date getEnd() const;
+	const Date& getStart() const;
+	const Date& getEnd() const;
+	const std::string& getNote() const;
+	const std::set<Activity>& getActivities() const;
 	int getGuests() const;
-	std::string getNote() const;
-	std::set<Activity> getActivities() const;
 
 	int calculateDuration() const;
-	void addActivity(Activity&);
+	void addActivity(std::string& activity);
 
-	friend std::ostream& operator<<(std::ostream&, const Reservation&);
-	
+	friend std::ostream& operator<<(std::ostream& os, const Reservation& reservation);
+
 private:
-	Date start;
-	Date end;
+	Date* start;
+	Date* end;
 	int guests;
 	std::string note;
 	std::set<Activity> activities;

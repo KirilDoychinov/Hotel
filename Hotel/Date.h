@@ -6,26 +6,22 @@
 class Date
 {
 public:
-	Date(int, int, int);
-	Date(const Date&);
+	Date(int day, int month, int year);
+	Date(const Date& other);
 	~Date();
 
-	int getDay() const;
-	int getMonth() const;
-	int getYear() const;
+	friend bool operator <(const Date& lhs, const Date& rhs);
+	friend bool operator >(const Date& lhs, const Date& rhs);
+	friend bool operator<=(const Date& lhs, const  Date& rhs);
+	friend bool operator>=(const  Date& lhs, const  Date& rhs);
+	friend bool operator==(const Date& lhs, const Date& rhs);
+	friend bool operator!=(const Date& lhs, const Date& rhs);
 
-	friend bool operator <(const Date&, const Date&);
-	friend bool operator >(const Date&, const Date&);
-	friend bool operator<=(const Date&, const  Date&);
-	friend bool operator>=(const  Date&, const  Date&);
-	friend bool operator==(const Date&, const Date&);
-	friend bool operator!=(const Date&, const Date&);
-	
-	Date& operator=(Date);
+	Date& operator=(Date other);
 
-	friend std::ostream& operator<<(std::ostream&, const Date&);
+	friend std::ostream& operator<<(std::ostream& os, const Date& date);
 	friend void swap(Date& first, Date& second);
-	friend int duration(const Date&, const Date&);
+	friend long duration(const Date& first, const Date& second);
 
 	static Date* today();
 

@@ -2,9 +2,10 @@
 #include <algorithm>
 #include <ctime>
 
-void adjustLeapYears(long&, const Date&);
+int countLeapYears(int, int);
+void accumulateDays(long&, int);
 
-Date::Date(int d, int m, int y) : day(d), month(m), year(y) {
+Date::Date(int day, int month, int year) : day(day), month(month), year(year) {
 }
 
 Date::Date(const Date& other) : day(other.day), month(other.month), year(other.year) {
@@ -13,49 +14,31 @@ Date::Date(const Date& other) : day(other.day), month(other.month), year(other.y
 Date::~Date() {
 }
 
-int Date::getDay() const {
-	return this->day;
-}
-
-int Date::getMonth() const {
-	return this->month;
-}
-
-int Date::getYear() const {
-	return this->year;
-}
-
 Date& Date::operator=(Date other)
 {
 	swap(*this, other);
 	return *this;
 }
 
-int  duration(const Date& lhs, const Date& rhs) {
-	const int monthDays[12] = { 31, 28, 31, 30, 31, 30,
-							   31, 31, 30, 31, 30, 31 };
+long duration(const Date& first, const Date& second) {
+	long totalDays1 = first.year * 365 + first.day, totalDays2 = second.year * 365 + second.day;
 
-	long int lhsDaysElapsed = lhs.year * 365 + lhs.day, rhsDaysElapsed = rhs.year * 365 + rhs.day;
+	accumulateDays(totalDays1, first.month);
+	accumulateDays(totalDays2, second.month);
 
-	for (int i = 0; i < lhs.month - 1; ++i)
-		lhsDaysElapsed += monthDays[i];
-
-	adjustLeapYears(lhsDaysElapsed, lhs);
-	adjustLeapYears(rhsDaysElapsed, rhs);
-
-	return abs(lhsDaysElapsed - rhsDaysElapsed);
+	return totalDays1 + countLeapYears(first.month, first.year) - totalDays2 - countLeapYears(second.month, second.year);
 }
 
-std::ostream& operator<<(std::ostream& os, const Date& dt)
+std::ostream& operator<<(std::ostream& os, const Date& date)
 {
-	os << dt.year << '-' << dt.month << '-' << dt.day;
+	os << date.year << '-' << date.month << '-' << date.day;
 	return os;
 }
 
-void swap(Date& first, Date& second) {
-	std::swap(first.day, second.day);
-	std::swap(first.month, second.month);
-	std::swap(first.year, second.year);
+void swap(Date& first, Date& other) {
+	std::swap(first.day, other.day);
+	std::swap(first.month, other.month);
+	std::swap(first.year, other.year);
 }
 
 bool operator <(const Date& lhs, const Date& rhs) {
@@ -97,10 +80,17 @@ Date* Date::today() {
 	return new Date(day, month, year);
 }
 
-void adjustLeapYears(long& days, const Date& date) {
-	if (date.getMonth() <= 2)
-		--days;
+int countLeapYears(int month, int year) {
+	if (month <= 2)
+		year--;
 
-	int year = date.getYear();
-	days += year / 4 - year / 100 + year / 400;
+	return year / 4 - year / 100 + year / 400;
+}
+
+void accumulateDays(long& days, int month) {
+	const int daysPerMonth[12] = { 31, 28, 31, 30, 31, 30,
+						   31, 31, 30, 31, 30, 31 };
+
+	for (int i = 0; i < month - 1; ++i)
+		days += daysPerMonth[i];
 }

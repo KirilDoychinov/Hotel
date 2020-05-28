@@ -6,88 +6,105 @@ Hotel::Hotel() : rooms(std::vector<Room*>()) {
 }
 
 Hotel::~Hotel() {
-	for (auto& room : rooms)
+	for (auto room : rooms) {
 		delete room;
+		room = nullptr;
+	}
 }
 
 bool Hotel::empty() const {
 	return rooms.size() == 0;
 }
 
-void Hotel::addRoom(Room* room) {
-	rooms.push_back(room);
+bool Hotel::hasRoom(int room) const {
+	return findRoom(room) != nullptr;
 }
 
-Room* Hotel::findRoom(int number) {
-	for (auto& room : rooms)
+void Hotel::addRoom(int number, int capacity) {
+	rooms.push_back(new Room(number, capacity));
+}
+
+Room* Hotel::findRoom(int number) const {
+	for (auto room : rooms)
 		if (room->getNumber() == number)
 			return room;
 
 	return nullptr;
 }
 
-void Hotel::addReservation(int number, Reservation* reservation) {
-	findRoom(number)->reserve(reservation);
-}
-
-void Hotel::availability(const Date& date) {
-	for (auto& room : rooms)
+void Hotel::availability(Date* date) const {
+	for (auto room : rooms)
 		if (room->isFree(date))
 			std::cout << room->getNumber() << " with capacity " << room->getCapacity() << std::endl;
 }
 
-void  Hotel::checkout(int number) {
-	findRoom(number)->free();
+void Hotel::makeReservation(int roomNumber, Date* start, Date* end, std::string& note, int guests) {
+	auto room = findRoom(roomNumber);
+
+	if (room != nullptr) {
+		room->reserve(start, end, note, guests == -1 ? room->getCapacity() : guests);
+	}
+	else
+		std::cout << "Room does not exist!" << std::endl;
 }
 
-void  Hotel::report(const Date& start, const Date& end) {
-	for (auto& room : rooms) {
-		int daysInUse = room->countDaysInUse(start, end);
-		if (daysInUse > 0) {
-			std::cout << room->getNumber() << " used for " << daysInUse << " days" << std::endl;
-		}
+void  Hotel::emptyRoom(int roomNumber) {
+	Room* room = findRoom(roomNumber);
+	if (room != nullptr)
+		room->free();
+}
 
+void  Hotel::report(Date* start, Date* end) const {
+	for (auto room : rooms) {
+		int daysInUse = room->countDaysInUse(start, end);
+		if (daysInUse > 0)
+			std::cout << room->getNumber() << " used for " << daysInUse << " days" << std::endl;
 	}
 }
 
-int Hotel::findRoom(int bedsNeeded, const Date& start, const Date& end) {
-	int bestRoom = -1, minCapacity = INT_MAX;
-	for (auto& room : rooms) {
+int Hotel::findRoom(int beds, Date* start, Date* end) const {
+	int indexBestRoom = -1, minCapacity = INT_MAX;
+	for (auto room : rooms) {
 		int capacity = room->getCapacity();
-		if (capacity >= bedsNeeded && room->isFree(start, end))
+		if (capacity >= beds && room->isFree(start, end))
 			if (capacity < minCapacity) {
 				minCapacity = capacity;
-				bestRoom = room->getNumber();
+				indexBestRoom = room->getNumber();
 			}
 	}
 
-	return bestRoom;
+	return indexBestRoom;
 }
 
-void Hotel::printRoomActivities(int roomNumber) {
+void Hotel::printRoomActivities(int roomNumber) const {
 	Room* room = findRoom(roomNumber);
 
 	if (room != nullptr) {
 		Reservation* r = room->getCurrentReservation();
 		if (r != nullptr)
-			for (Activity a : r->getActivities())
+			for (const Activity& a : r->getActivities())
 				std::cout << a << std::endl;
 	}
 }
 
-void Hotel::printAllSubscribedFor(Activity& activity) {
+void Hotel::printSubs(const Activity& activity)  const {
 	for (auto room : rooms) {
-		Reservation* currentRes = room->getCurrentReservation();
-		if (currentRes != nullptr) {
-			auto subscribedActivities = currentRes->getActivities();
-			if (currentRes->getActivities().find(activity) != currentRes->getActivities().end())
+		Reservation* currentReservation = room->getCurrentReservation();
+		if (currentReservation != nullptr) {
+			if (currentReservation->getActivities().find(activity) != currentReservation->getActivities().end())
 				std::cout << room->getNumber() << std::endl;
 		}
 	}
 }
 
+void Hotel::addActivity(int room, std::string& activity) {
+	Room* room = findRoom(room);
+
+	if (room != nullptr) {
+}
+
 std::ostream& operator<<(std::ostream& os, const Hotel& hotel) {
-	for (auto* room : hotel.rooms)
+	for (auto room : hotel.rooms)
 		os << *room;
 
 	return os;
