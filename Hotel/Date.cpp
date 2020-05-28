@@ -1,6 +1,7 @@
 #include "Date.h"
 #include <algorithm>
 #include <ctime>
+#include <iostream>
 
 int countLeapYears(int, int);
 void accumulateDays(long&, int);
@@ -27,18 +28,6 @@ long duration(const Date& first, const Date& second) {
 	accumulateDays(totalDays2, second.month);
 
 	return totalDays1 + countLeapYears(first.month, first.year) - totalDays2 - countLeapYears(second.month, second.year);
-}
-
-std::ostream& operator<<(std::ostream& os, const Date& date)
-{
-	os << date.year << '-' << date.month << '-' << date.day;
-	return os;
-}
-
-void swap(Date& first, Date& other) {
-	std::swap(first.day, other.day);
-	std::swap(first.month, other.month);
-	std::swap(first.year, other.year);
 }
 
 bool operator <(const Date& lhs, const Date& rhs) {
@@ -70,13 +59,13 @@ bool operator !=(const Date& lhs, const Date& rhs) {
 }
 
 Date* Date::today() {
-	time_t now = std::time(0);
-	tm* time = std::localtime(&now);
-
-	int year = 1900 + time->tm_year;
-	int month = 1 + time->tm_mon;
-	int day = time->tm_mday;
-
+	struct tm time;
+	time_t now = std::time(nullptr);
+	localtime_s(&time, &now);
+	int day = time.tm_mday;
+	int month = 1 + time.tm_mon;
+	int year = 1900 + time.tm_year;
+	
 	return new Date(day, month, year);
 }
 
@@ -93,4 +82,25 @@ void accumulateDays(long& days, int month) {
 
 	for (int i = 0; i < month - 1; ++i)
 		days += daysPerMonth[i];
+}
+
+
+std::ostream& operator<<(std::ostream& os, const Date& date)
+{
+	os << date.year << '-' << date.month << '-' << date.day;
+	return os;
+}
+
+void swap(Date& first, Date& other) {
+	std::swap(first.day, other.day);
+	std::swap(first.month, other.month);
+	std::swap(first.year, other.year);
+}
+
+bool validate(const Date& first, const Date& second) {
+	if (first > second) {
+		std::cout << "Invalid dates! End date should be after the starting one!" << std::endl;
+		return false;
+	}
+	return true;
 }

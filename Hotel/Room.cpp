@@ -1,5 +1,5 @@
 #include "Room.h"
-#include <cassert>
+#include <optional>
 
 Room::Room(int number, int capacity) : number(number), capacity(capacity), reservations(std::vector<Reservation*>()) {
 }
@@ -34,42 +34,43 @@ bool Room::reserve(Date* start, Date* end, std::string& note, int guests) {
 				reservations.insert(reservations.begin() + i, reservation);
 				break;
 			}
-			if (*start <= temp->getEnd())
+			else if (*start <= temp->getEnd()) {
+				delete reservation;
 				return false;
+			}
 		}
 
 	return true;
 }
 
-bool Room::isFree(Date* date) const {
-
+std::optional<Reservation*> Room::findReservation(Date* date) const {
 	for (Reservation* reservation : reservations) {
 		if (reservation->getStart() <= *date && *date <= reservation->getEnd())
-			return false;
+			return reservation;
 		if (reservation->getStart() > * date)
 			break;
 	}
 
-	return true;
+	return {};
+}
+
+
+bool Room::isFree(Date* date) const {
+	return !findReservation(date).has_value();
 }
 
 bool Room::isFree(Date* start, Date* end) const {
-	assert(end >= start);
-
-	for (auto& reservation : reservations) {
+	for (auto reservation : reservations) {
 		if (*end < reservation->getStart())
 			break;
 		if (*start <= reservation->getEnd())
 			return false;
 	}
-
 	return true;
 }
 
 int Room::countDaysInUse(Date* start, Date* end) const {
-
 	int days = 0;
-
 	for (Reservation* reservation : reservations) {
 		if (reservation->getStart() > * end)
 			break;
@@ -77,47 +78,35 @@ int Room::countDaysInUse(Date* start, Date* end) const {
 			Date intersectionStart = reservation->getStart() > * start ? reservation->getStart() : *start;
 			Date intersectionEnd = reservation->getEnd() < *end ? reservation->getEnd() : *end;
 			days += duration(intersectionStart, intersectionEnd);
-
 		}
 	}
 
 	return days;
 }
 
-Reservation* Room::getCurrentReservation() const {
-	Date today = *Date::today();
-	for (Reservation* reservation : reservations) {
-		if (reservation->getStart() <= today && today <= reservation->getEnd())
-			return  reservation;
-	}
-
-	return nullptr;
-}
-
 void Room::free() {
 	Date today = *Date::today();
-	int currentReservationIndex = -1;
 
 	for (size_t i = 0; i < reservations.size(); ++i) {
 		Reservation* current = reservations.at(i);
 		if (current->getStart() <= today && today <= current->getEnd()) {
-			currentReservationIndex = i;
-			break;
+			delete reservations.at(i);
+			reservations.erase(reservations.begin() + i);
+			std::cout << "Room was succesfully freed!" << std::endl;
+			return;
 		}
 	}
 
-	if (currentReservationIndex != -1)
-		reservations.erase(reservations.begin() + currentReservationIndex);
+	std::cout << "Room is already free and waiting for guests!" << std::endl;
 }
 
 void Room::subscribe(std::string& activity) {
-	Reservation* current = getCurrentReservation();
-	if (current != nullptr)
-		current->addActivity(activity);
+	auto reservation = findReservation(Date::today());
+	if (reservation.has_value())
+		reservation.value()->addActivity(activity);
 }
 
 std::ostream& operator<<(std::ostream& os, const Room& room) {
-
 	std::string separator = " ";
 	os << room.number << separator << room.capacity;
 

@@ -33,10 +33,10 @@
     <ClInclude Include="Hotel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utils.h">
+    <ClInclude Include="Activity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Activity.h">
+    <ClInclude Include="TextUtilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -64,10 +64,10 @@
     <ClCompile Include="Hotel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Utils.cpp">
+    <ClCompile Include="Activity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Activity.cpp">
+    <ClCompile Include="TextUtilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

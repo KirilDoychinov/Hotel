@@ -5,6 +5,7 @@
 #include "Date.h"
 #include <vector>
 #include <string>
+#include <optional>
 
 class Room
 {
@@ -17,11 +18,13 @@ public:
 	int getCapacity() const;
 	const std::vector<Reservation*>& getReservations() const;
 	bool reserve(Date* start, Date* end, std::string& note, int guests);
-	bool isFree(Date* date) const;
+
+	bool isFree(Date* date = Date::today()) const;
 	bool isFree(Date* start, Date* end) const;
+	std::optional<Reservation*> findReservation(Date* date) const;
+
 	void free();
 	int countDaysInUse(Date* start, Date* end) const;
-	Reservation* getCurrentReservation() const;
 	void subscribe(std::string& activity);
 
 	friend std::ostream& operator<<(std::ostream& os, const Room& room);

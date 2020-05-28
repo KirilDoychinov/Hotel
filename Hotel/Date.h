@@ -22,6 +22,7 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Date& date);
 	friend void swap(Date& first, Date& second);
 	friend long duration(const Date& first, const Date& second);
+	friend bool validate(const Date& first, const Date& second);
 
 	static Date* today();
 

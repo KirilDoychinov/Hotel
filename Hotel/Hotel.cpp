@@ -1,6 +1,7 @@
 #include "Hotel.h"
 #include "Room.h"
 #include <iostream>
+#include <optional>
 
 Hotel::Hotel() : rooms(std::vector<Room*>()) {
 }
@@ -12,16 +13,26 @@ Hotel::~Hotel() {
 	}
 }
 
-bool Hotel::empty() const {
+bool Hotel::isEmpty() const {
 	return rooms.size() == 0;
 }
 
-bool Hotel::hasRoom(int room) const {
-	return findRoom(room) != nullptr;
+bool Hotel::hasRoom(int number) const {
+	return findRoom(number) != nullptr;
 }
 
-void Hotel::addRoom(int number, int capacity) {
-	rooms.push_back(new Room(number, capacity));
+std::optional<Room*> Hotel::getRoom(int roomNumber) const {
+	auto room = findRoom(roomNumber);
+	if (room == nullptr) {
+		std::cout << "Room with number " << roomNumber << " does not exist!" << std::endl;
+		return {};
+	}
+	return room;
+}
+
+void Hotel::addRoom(int roomNumber, int capacity) {
+	if (!hasRoom(roomNumber))
+		rooms.push_back(new Room(roomNumber, capacity));
 }
 
 Room* Hotel::findRoom(int number) const {
@@ -32,26 +43,24 @@ Room* Hotel::findRoom(int number) const {
 	return nullptr;
 }
 
-void Hotel::availability(Date* date) const {
+void Hotel::printAvailableRooms(Date* date) const {
 	for (auto room : rooms)
 		if (room->isFree(date))
 			std::cout << room->getNumber() << " with capacity " << room->getCapacity() << std::endl;
 }
 
 void Hotel::makeReservation(int roomNumber, Date* start, Date* end, std::string& note, int guests) {
-	auto room = findRoom(roomNumber);
-
-	if (room != nullptr) {
-		room->reserve(start, end, note, guests == -1 ? room->getCapacity() : guests);
+	auto room = getRoom(roomNumber);
+	if (room.has_value()) {
+		guests = (guests == -1) ? room.value()->getCapacity() : guests;
+		room.value()->reserve(start, end, note, guests);
 	}
-	else
-		std::cout << "Room does not exist!" << std::endl;
 }
 
 void  Hotel::emptyRoom(int roomNumber) {
-	Room* room = findRoom(roomNumber);
-	if (room != nullptr)
-		room->free();
+	auto room = getRoom(roomNumber);
+	if (room.has_value())
+		room.value()->free();
 }
 
 void  Hotel::report(Date* start, Date* end) const {
@@ -62,45 +71,55 @@ void  Hotel::report(Date* start, Date* end) const {
 	}
 }
 
-int Hotel::findRoom(int beds, Date* start, Date* end) const {
-	int indexBestRoom = -1, minCapacity = INT_MAX;
+std::optional<int> Hotel::findAvailabeRoom(int beds, Date* start, Date* end) const {
+	int numberBestRoom = -1, minCapacity = INT_MAX;
 	for (auto room : rooms) {
 		int capacity = room->getCapacity();
+
 		if (capacity >= beds && room->isFree(start, end))
 			if (capacity < minCapacity) {
 				minCapacity = capacity;
-				indexBestRoom = room->getNumber();
+				numberBestRoom = room->getNumber();
 			}
 	}
 
-	return indexBestRoom;
+	return numberBestRoom == -1 ? std::nullopt : std::optional(numberBestRoom);
 }
 
 void Hotel::printRoomActivities(int roomNumber) const {
-	Room* room = findRoom(roomNumber);
+	auto room = getRoom(roomNumber);
 
-	if (room != nullptr) {
-		Reservation* r = room->getCurrentReservation();
-		if (r != nullptr)
-			for (const Activity& a : r->getActivities())
-				std::cout << a << std::endl;
+	if (room.has_value()) {
+		auto reservation = room.value()->findReservation(Date::today());
+		if (reservation.has_value())
+			for (const std::string& activity : reservation.value()->getActivities())
+				std::cout << activity << std::endl;
 	}
 }
 
-void Hotel::printSubs(const Activity& activity)  const {
+void Hotel::subscribeRoom(int roomNumber, std::string& activity) {
+	auto room = getRoom(roomNumber);
+	if (room.has_value() && validateActivity(activity))
+		room.value()->subscribe(activity);
+}
+
+void Hotel::printSubscribedRooms(const std::string& activity)  const {
+	if (!validateActivity(activity))
+		return;
+
 	for (auto room : rooms) {
-		Reservation* currentReservation = room->getCurrentReservation();
-		if (currentReservation != nullptr) {
-			if (currentReservation->getActivities().find(activity) != currentReservation->getActivities().end())
+		auto reservation = room->findReservation(Date::today());
+
+		if (reservation.has_value()) {
+			const std::set < std::string > activities = reservation.value()->getActivities();
+			if (activities.find(activity) != activities.end())
 				std::cout << room->getNumber() << std::endl;
 		}
 	}
 }
 
-void Hotel::addActivity(int room, std::string& activity) {
-	Room* room = findRoom(room);
-
-	if (room != nullptr) {
+const std::set<std::string>& Hotel::getAllActivities() const {
+	return activities;
 }
 
 std::ostream& operator<<(std::ostream& os, const Hotel& hotel) {
@@ -109,3 +128,15 @@ std::ostream& operator<<(std::ostream& os, const Hotel& hotel) {
 
 	return os;
 }
+
+bool Hotel::validateActivity(const std::string& activity) const {
+	if (activities.find(activity) == activities.end()) {
+		std::cout << activity << " is not a valid hotel activity!" << std::endl;
+		return false;
+	}
+
+	return true;
+}
+
+
+

@@ -1,6 +1,7 @@
 #include <iostream>
+#include "ControlPanel.h"
 
 int main() {
-
-	std::cout << "xccvccvdfd" << std::endl;
+	ControlPanel* cp = new ControlPanel();
+	cp->start();
 }
