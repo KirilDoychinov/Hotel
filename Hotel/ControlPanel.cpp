@@ -10,7 +10,6 @@ using namespace std::regex_constants;
 bool validateRecord(const std::string&);
 bool validateLine(const std::string& line);
 
-
 ControlPanel::ControlPanel() :hotel(nullptr), file("") {
 }
 
@@ -140,6 +139,7 @@ void ControlPanel::checkin(const std::string& args) {
 	Date* start = TextUtilities::extractDate(tokens.at(1));
 	Date* end = TextUtilities::extractDate(tokens.at(2));
 	std::string note = tokens.at(3);
+	TextUtilities::extractContent(note);
 
 	if (validate(*start, *end))
 		if (tokens.size() == 4)
@@ -251,16 +251,15 @@ void ControlPanel::readLine(std::string& line) {
 		return;
 
 	std::vector<std::string> tokens = TextUtilities::extractTokens(line);
-
 	int room = std::stoi(tokens.at(0)), capacity = std::stoi(tokens.at(1));
 	hotel->addRoom(room, capacity);
 
 	for (size_t i = 2; i < tokens.size(); ++i) {
 		auto record = tokens.at(i);
 		TextUtilities::extractContent(record);
-
-		if (validateRecord(record))
+		if (validateRecord(record)) {
 			readRecord(room, record);
+		}
 	}
 }
 
@@ -282,8 +281,7 @@ void ControlPanel::readRecord(int room, const std::string& record) {
 }
 
 bool validateLine(const std::string& line) {
-	const std::regex regex("[0-9]+ [0-9]+( {.*})*", ECMAScript);
-
+	const std::regex regex("[0-9]+ [0-9]+( \\{.*\\})*", ECMAScript);
 	return std::regex_match(line, regex);
 }
 

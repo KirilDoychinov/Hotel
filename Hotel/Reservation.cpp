@@ -1,7 +1,7 @@
 #include "Reservation.h"
 
 Reservation::Reservation(Date* start, Date* end, std::string& note, int guests) :
-	start(start), end(end), note(note), guests(guests), activities(std::set < std::string > ()) {
+	start(start), end(end), note(note), guests(guests), activities(std::set < std::string >()) {
 }
 
 Reservation::~Reservation() {
@@ -34,7 +34,12 @@ int Reservation::calculateDuration() const {
 }
 
 void  Reservation::addActivity(std::string& activity) {
-	activities.insert(activity);
+	if (activities.find(activity) == activities.end()) {
+		activities.insert(activity);
+		std::cout << "Activity succesfully added!" << std::endl;
+	}
+	else
+		std::cout << "Room guests have already subscribed for this activity!" << std::endl;
 }
 
 bool Reservation::hasActivity(const std::string& activity) const {
@@ -45,7 +50,7 @@ std::ostream& operator<<(std::ostream& os, const Reservation& reservation) {
 	std::string separator = " ";
 
 	os << "{";
-	os << reservation.getStart() << separator << reservation.getEnd() << separator << "\"" << reservation.getNote() << "\" " << separator << reservation.getGuests();
+	os << reservation.getStart() << separator << reservation.getEnd() << separator << '"' << reservation.getNote() << '"' << separator << reservation.getGuests();
 	os << "}";
 
 	return os;

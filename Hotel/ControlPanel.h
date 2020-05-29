@@ -13,8 +13,8 @@ using namespace std::placeholders;
 const std::string DATE = "(19|20)[0-9][0-9]-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])";
 const std::string NUM = "[0-9]+";
 const std::string OPT_NUM = "( [0-9]*)?";
-const std::string OPT_DATE = "( (19|20)[0-9][0-9]-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01]))?";
-const std::string QUOTED_TEXT = "\".*\"";
+const std::string OPT_DATE = "((19|20)[0-9][0-9]-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01]))?";
+const std::string QUOTED_TEXT = "\\\".*\\\"";
 const std::string WORD = "[a-zA-Z]+";
 const std::string TXTFILE = "[^ <>:\"/|\\\\?*.]+\\.txt";
 

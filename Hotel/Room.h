@@ -17,7 +17,7 @@ public:
 	int getNumber() const;
 	int getCapacity() const;
 	const std::vector<Reservation*>& getReservations() const;
-	bool reserve(Date* start, Date* end, std::string& note, int guests);
+	void reserve(Date* start, Date* end, std::string& note, int guests);
 
 	bool isFree(Date* date = Date::today()) const;
 	bool isFree(Date* start, Date* end) const;

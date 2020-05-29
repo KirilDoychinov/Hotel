@@ -9,7 +9,6 @@ Hotel::Hotel() : rooms(std::vector<Room*>()) {
 Hotel::~Hotel() {
 	for (auto room : rooms) {
 		delete room;
-		room = nullptr;
 	}
 }
 
@@ -31,8 +30,12 @@ std::optional<Room*> Hotel::getRoom(int roomNumber) const {
 }
 
 void Hotel::addRoom(int roomNumber, int capacity) {
-	if (!hasRoom(roomNumber))
+	if (!hasRoom(roomNumber)) {
+		std::cout << "Room " << roomNumber << " was succesfully read!" << std::endl;
 		rooms.push_back(new Room(roomNumber, capacity));
+	}
+	else
+		std::cout << "Error with room " << roomNumber << "! Room is already present in the system!" << std::endl;
 }
 
 Room* Hotel::findRoom(int number) const {
@@ -44,9 +47,16 @@ Room* Hotel::findRoom(int number) const {
 }
 
 void Hotel::printAvailableRooms(Date* date) const {
+	bool foundAvailableRooms = false;
+
 	for (auto room : rooms)
-		if (room->isFree(date))
+		if (room->isFree(date)) {
 			std::cout << room->getNumber() << " with capacity " << room->getCapacity() << std::endl;
+			foundAvailableRooms = true;
+		}
+
+	if (!foundAvailableRooms)
+		std::cout << "No available rooms were found for the given date!" << std::endl;
 }
 
 void Hotel::makeReservation(int roomNumber, Date* start, Date* end, std::string& note, int guests) {
@@ -68,6 +78,8 @@ void  Hotel::report(Date* start, Date* end) const {
 		int daysInUse = room->countDaysInUse(start, end);
 		if (daysInUse > 0)
 			std::cout << room->getNumber() << " used for " << daysInUse << " days" << std::endl;
+		else
+			std::cout << room->getNumber() << " was not used in the given period!" << std::endl;
 	}
 }
 
@@ -91,31 +103,46 @@ void Hotel::printRoomActivities(int roomNumber) const {
 
 	if (room.has_value()) {
 		auto reservation = room.value()->findReservation(Date::today());
-		if (reservation.has_value())
-			for (const std::string& activity : reservation.value()->getActivities())
-				std::cout << activity << std::endl;
+		if (reservation.has_value()) {
+			auto activities = reservation.value()->getActivities();
+			if (!activities.empty()) {
+				for (const std::string& activity : activities)
+					std::cout << activity << std::endl;
+				return;
+			}
+		}
 	}
+	std::cout << "Room has not subscribed for any activites yet!" << std::endl;
 }
 
 void Hotel::subscribeRoom(int roomNumber, std::string& activity) {
 	auto room = getRoom(roomNumber);
-	if (room.has_value() && validateActivity(activity))
+	if (room.has_value() && validateActivity(activity)) {
 		room.value()->subscribe(activity);
+	}
+
 }
 
 void Hotel::printSubscribedRooms(const std::string& activity)  const {
 	if (!validateActivity(activity))
 		return;
 
+	int subscriptions = 0;
+
 	for (auto room : rooms) {
 		auto reservation = room->findReservation(Date::today());
 
 		if (reservation.has_value()) {
 			const std::set < std::string > activities = reservation.value()->getActivities();
-			if (activities.find(activity) != activities.end())
+			if (activities.find(activity) != activities.end()) {
 				std::cout << room->getNumber() << std::endl;
+				++subscriptions;
+			}
 		}
 	}
+
+	if (subscriptions == 0)
+		std::cout << "No room has currently subscribed for " << activity << "!" << std::endl;
 }
 
 const std::set<std::string>& Hotel::getAllActivities() const {
@@ -134,7 +161,6 @@ bool Hotel::validateActivity(const std::string& activity) const {
 		std::cout << activity << " is not a valid hotel activity!" << std::endl;
 		return false;
 	}
-
 	return true;
 }
 

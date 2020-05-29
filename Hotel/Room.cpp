@@ -21,8 +21,14 @@ const std::vector<Reservation*>& Room::getReservations() const {
 	return reservations;
 }
 
-bool Room::reserve(Date* start, Date* end, std::string& note, int guests) {
+void Room::reserve(Date* start, Date* end, std::string& note, int guests) {
 	Reservation* reservation = new Reservation(start, end, note, guests);
+
+	if (guests > capacity) {
+		std::cout << "Error with reservation: " << *reservation << " Selected room is too small to acommodate " << guests << " guests!" << std::endl;
+		delete reservation;
+		return;
+	}
 
 	if (reservations.empty() || reservations.back()->getEnd() < *start)
 		reservations.push_back(reservation);
@@ -30,17 +36,20 @@ bool Room::reserve(Date* start, Date* end, std::string& note, int guests) {
 	else
 		for (int i = 0; i < reservations.size(); ++i) {
 			Reservation* temp = reservations[i];
+
 			if (*end < temp->getStart()) {
 				reservations.insert(reservations.begin() + i, reservation);
 				break;
 			}
+
 			else if (*start <= temp->getEnd()) {
+				std::cout << "Error with reservation: " << *reservation << " Room is already reserved for the given period." << std::endl;
 				delete reservation;
-				return false;
+				return;
 			}
 		}
 
-	return true;
+	std::cout << "Reservation was successful!" << std::endl;
 }
 
 std::optional<Reservation*> Room::findReservation(Date* date) const {
@@ -104,6 +113,8 @@ void Room::subscribe(std::string& activity) {
 	auto reservation = findReservation(Date::today());
 	if (reservation.has_value())
 		reservation.value()->addActivity(activity);
+	else
+		std::cout << "Room has no current guests to be subscribed for any activity!" << std::endl;
 }
 
 std::ostream& operator<<(std::ostream& os, const Room& room) {

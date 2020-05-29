@@ -1,10 +1,11 @@
 #include "Date.h"
 #include <algorithm>
 #include <ctime>
+#include <cstdlib>
 #include <iostream>
 
 int countLeapYears(int, int);
-void accumulateDays(long&, int);
+void acumulateDays(long&, int);
 
 Date::Date(int day, int month, int year) : day(day), month(month), year(year) {
 }
@@ -24,10 +25,10 @@ Date& Date::operator=(Date other)
 long duration(const Date& first, const Date& second) {
 	long totalDays1 = first.year * 365 + first.day, totalDays2 = second.year * 365 + second.day;
 
-	accumulateDays(totalDays1, first.month);
-	accumulateDays(totalDays2, second.month);
+	acumulateDays(totalDays1, first.month);
+	acumulateDays(totalDays2, second.month);
 
-	return totalDays1 + countLeapYears(first.month, first.year) - totalDays2 - countLeapYears(second.month, second.year);
+	return abs(totalDays2 + countLeapYears(second.month, second.year) - totalDays1 - countLeapYears(first.month, first.year));
 }
 
 bool operator <(const Date& lhs, const Date& rhs) {
@@ -65,7 +66,7 @@ Date* Date::today() {
 	int day = time.tm_mday;
 	int month = 1 + time.tm_mon;
 	int year = 1900 + time.tm_year;
-	
+
 	return new Date(day, month, year);
 }
 
@@ -76,7 +77,7 @@ int countLeapYears(int month, int year) {
 	return year / 4 - year / 100 + year / 400;
 }
 
-void accumulateDays(long& days, int month) {
+void acumulateDays(long& days, int month) {
 	const int daysPerMonth[12] = { 31, 28, 31, 30, 31, 30,
 						   31, 31, 30, 31, 30, 31 };
 
@@ -87,7 +88,17 @@ void accumulateDays(long& days, int month) {
 
 std::ostream& operator<<(std::ostream& os, const Date& date)
 {
-	os << date.year << '-' << date.month << '-' << date.day;
+	char separator = '-';
+	os << date.year << separator;
+
+	if (date.month < 10)
+		os << "0";
+	os << date.month << separator;
+
+	if (date.day < 10)
+		os << "0";
+	os << date.day;
+
 	return os;
 }
 

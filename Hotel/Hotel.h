@@ -34,7 +34,7 @@ public:
 
 private:
 	std::vector<Room*> rooms;
-	const std::set <std::string> activities = { "football", "golf","yoga","swimming","volleyball","squash" };
+	const std::set <std::string> activities = { "football", "golf","yoga","swimming","volleyball","squash", "tennis" };
 
 	Room* findRoom(int number) const;
 	bool validateActivity(const std::string& activity) const;

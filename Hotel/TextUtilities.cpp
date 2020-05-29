@@ -35,7 +35,10 @@ std::vector<std::string> TextUtilities::extractTokens(const std::string& line, c
 	for (size_t i = 0; i < line.size(); ++i) {
 		char ch = line.at(i);
 
-		if (ch == '{')
+		if (i == line.size() - 1)
+			tokens.push_back(line.substr(start, i - start + 1));
+
+		else if (ch == '{')
 			brackets = true;
 
 		else if (ch == '}')
@@ -43,9 +46,6 @@ std::vector<std::string> TextUtilities::extractTokens(const std::string& line, c
 
 		else if (ch == '"')
 			quotes = not quotes;
-
-		else if (i == line.size() - 1)
-			tokens.push_back(line.substr(start, i - start + 1));
 
 		else if (ch == delimeter && !quotes && !brackets) {
 			tokens.push_back(line.substr(start, i - start));
