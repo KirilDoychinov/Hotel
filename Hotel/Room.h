@@ -7,6 +7,13 @@
 #include <string>
 #include <optional>
 
+/**
+ * @class  Room
+ *
+ * @brief  Class Representing an hotel room with given number, capacity and 
+ * 		   list of hotel reservations for the room
+ */
+
 class Room
 {
 
@@ -30,8 +37,19 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Room& room);
 
 private:
+	/**
+	* Room number
+	*/
 	int number;
+
+	/**
+	* Room capacity
+	*/
 	int capacity;
+
+	/**
+	* List of reservations made for the room
+	*/
 	std::vector<Reservation*> reservations;
 };
 

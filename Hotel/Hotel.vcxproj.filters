@@ -27,16 +27,13 @@
     <ClInclude Include="Date.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ControlPanel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hotel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Activity.h">
+    <ClInclude Include="TextUtilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TextUtilities.h">
+    <ClInclude Include="HotelManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -58,16 +55,13 @@
     <ClCompile Include="Date.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ControlPanel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Hotel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Activity.cpp">
+    <ClCompile Include="TextUtilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TextUtilities.cpp">
+    <ClCompile Include="HotelManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

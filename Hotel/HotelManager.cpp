@@ -1,4 +1,4 @@
-#include "ControlPanel.h"
+#include "HotelManager.h"
 #include "TextUtilities.h"
 #include <iostream>
 #include <string>
@@ -10,15 +10,32 @@ using namespace std::regex_constants;
 bool validateRecord(const std::string&);
 bool validateLine(const std::string& line);
 
-ControlPanel::ControlPanel() :hotel(nullptr), file("") {
+ /**
+  * @brief	Default constructor creating with no hotel
+  * 		present and empty data file
+  *
+  */
+
+HotelManager::HotelManager() :hotel(nullptr), file("") {
 }
 
-ControlPanel::~ControlPanel() {
+/**
+ * @brief	Destructor destroying the object and taking care
+ * 			of allocated dynamic memory
+ *
+ */
+
+HotelManager::~HotelManager() {
 	if (hotel != nullptr)
 		delete hotel;
 }
 
-void ControlPanel::start() {
+/**
+ * @brief	Starts the command console to read user commands
+ *
+ */
+
+void HotelManager::startConsole() {
 	std::cout << "Open a text file (.txt) to read: (open <file>.txt)" << std::endl;
 	std::string userInput;
 
@@ -28,12 +45,20 @@ void ControlPanel::start() {
 	};
 }
 
-void ControlPanel::executeCommand(std::string& line) {
-	TextUtilities::trim(line);
+/**
+ * @brief	             Executes a console-typed user command. If the given input
+ * 						 does not match any command, proper error message is printed
+ *
+ * @param [in]  input	 User console input
+ *
+ */
 
-	size_t space = line.find_first_of(" ");
-	std::string command = (space == std::string::npos) ? line : line.substr(0, space);
-	std::string args = (space == std::string::npos) ? "" : line.substr(space + 1);
+void HotelManager::executeCommand(std::string& input) {
+	TextUtilities::trim(input);
+
+	size_t space = input.find_first_of(" ");
+	std::string command = (space == std::string::npos) ? input : input.substr(0, space);
+	std::string args = (space == std::string::npos) ? "" : input.substr(space + 1);
 
 	if (file.empty()) {
 		if (command == "open" && std::regex_match(args, std::regex(TXTFILE, ECMAScript)))
@@ -42,11 +67,11 @@ void ControlPanel::executeCommand(std::string& line) {
 			std::cout << "Invalid command! Use 'open <filename>.txt' to open or create file in current dir!" << std::endl;
 	}
 
-	else if (simpleCommands.find(command) != simpleCommands.end())
-		simpleCommands.at(command)();
+	else if (commandsNoArgs.find(command) != commandsNoArgs.end())
+		commandsNoArgs.at(command)();
 
-	else if (advancedCommands.find(command) != advancedCommands.end()) {
-		auto match = advancedCommands.at(command);
+	else if (commandsWithArguments.find(command) != commandsWithArguments.end()) {
+		auto match = commandsWithArguments.at(command);
 		if (std::regex_match(args, std::regex(match.first, ECMAScript))) {
 			match.second(args);
 		}
@@ -58,7 +83,14 @@ void ControlPanel::executeCommand(std::string& line) {
 		std::cout << "Invalid command! Type 'help' to see available commands!" << std::endl;
 };
 
-void ControlPanel::open(const std::string& file) {
+/**
+ * @brief	           Opens a file to read from
+ *
+ * @param [in]  file   File to read
+ *
+ */
+
+void HotelManager::open(const std::string& file) {
 	std::fstream myFile(file, std::ios::app);
 
 	if (myFile.is_open()) {
@@ -71,7 +103,12 @@ void ControlPanel::open(const std::string& file) {
 		std::cout << "Error opening the file!" << std::endl;
 }
 
-void ControlPanel::help() const {
+/**
+ * @brief    Prints available user commands
+ *
+ */
+
+void HotelManager::help() const {
 	std::cout << "open <file>                                     opens <file>\n"
 		<< "close                                           closes currently opened file\n"
 		<< "save                                            saves the currently open file\n"
@@ -90,12 +127,22 @@ void ControlPanel::help() const {
 		<< "exit                                            exists the program" << std::endl;
 }
 
-void ControlPanel::exit() {
+/**
+ * @brief    Exits the programme
+ *
+ */
+
+void HotelManager::exit() {
 	std::cout << "Programme has been terminated succesfully!" << std::endl;
 	std::exit(0);
 }
 
-void ControlPanel::close() {
+/**
+ * @brief    Closes the current open file and clears any data read
+ *
+ */
+
+void HotelManager::close() {
 	if (hotel != nullptr) {
 		delete hotel;
 		hotel = nullptr;
@@ -105,8 +152,12 @@ void ControlPanel::close() {
 	file = "";
 }
 
+/**
+ * @brief    Saves the current data in the current file
+ *
+ */
 
-void ControlPanel::save() {
+void HotelManager::save() {
 	std::fstream myFile(file, std::ios::out | std::ios::trunc);
 
 	if (myFile.is_open()) {
@@ -119,7 +170,14 @@ void ControlPanel::save() {
 		std::cout << "Error opening the file!" << std::endl;
 }
 
-void ControlPanel::saveAs(const std::string& file) {
+/**
+ * @brief			   Writes current data to the file specified
+ *
+ * @param [in]  file   File to write data to
+ *
+ */
+
+void HotelManager::saveAs(const std::string& file) {
 	std::ofstream myFile(file, std::ios::out | std::ios::trunc);
 
 	if (myFile.is_open()) {
@@ -132,14 +190,21 @@ void ControlPanel::saveAs(const std::string& file) {
 		std::cout << "Error opening the file!" << std::endl;
 }
 
-void ControlPanel::checkin(const std::string& args) {
-	auto tokens = TextUtilities::extractTokens(args);
+/**
+ * @brief			   Makes new hotel reservation
+ *
+ * @param [in]  str    String to be read from
+ *
+ */
+
+void HotelManager::checkin(const std::string& str) {
+	auto tokens = TextUtilities::extractTokens(str);
 
 	int roomNumber = std::stoi(tokens.at(0));
 	Date* start = TextUtilities::extractDate(tokens.at(1));
 	Date* end = TextUtilities::extractDate(tokens.at(2));
 	std::string note = tokens.at(3);
-	TextUtilities::extractContent(note);
+	TextUtilities::removeFirstAndLastElement(note);
 
 	if (validate(*start, *end))
 		if (tokens.size() == 4)
@@ -148,27 +213,55 @@ void ControlPanel::checkin(const std::string& args) {
 			hotel->makeReservation(roomNumber, start, end, note, std::stoi(tokens.at(4)));
 }
 
-void ControlPanel::availability(const std::string& args) const {
-	Date* date = args.empty() ? Date::today() : TextUtilities::extractDate(args);
+/**
+ * @brief			   Prints available rooms at given date
+ *
+ * @param [in]  str    String to be read from
+ *
+ */
+
+void HotelManager::availability(const std::string& str) const {
+	Date* date = str.empty() ? Date::today() : TextUtilities::extractDate(str);
 	hotel->printAvailableRooms(date);
 }
 
-void ControlPanel::checkout(const std::string& args) {
-	int roomNumber = std::stoi(args);
+/**
+ * @brief			   Checkout given room
+ *
+ * @param [in]  str    String to be read from
+ *
+ */
+
+void HotelManager::checkout(const std::string& str) {
+	int roomNumber = std::stoi(str);
 	hotel->emptyRoom(roomNumber);
 }
 
-void ControlPanel::report(const std::string& args) const {
-	auto dates = TextUtilities::extractTokens(args);
+/**
+ * @brief			   Prints room usage in given period
+ *
+ * @param [in]  str    String to be read from
+ *
+ */
+
+void HotelManager::report(const std::string& str) const {
+	auto dates = TextUtilities::extractTokens(str);
 	Date* start = TextUtilities::extractDate(dates.at(0));
 	Date* end = TextUtilities::extractDate(dates.at(1));
 
 	if (validate(*start, *end))
-		hotel->report(start, end);
+		hotel->printRoomsUsage(start, end);
 }
 
-void ControlPanel::find(const std::string& args) const {
-	auto tokens = TextUtilities::extractTokens(args);
+/**
+ * @brief			   Find suitabe free room for given period and number of guests
+ *
+ * @param [in]  str    String to be read from
+ *
+ */
+
+void HotelManager::find(const std::string& str) const {
+	auto tokens = TextUtilities::extractTokens(str);
 
 	int bedsNeeded = std::stoi(tokens.at(0));
 	Date* start = TextUtilities::extractDate(tokens.at(1));
@@ -181,8 +274,15 @@ void ControlPanel::find(const std::string& args) const {
 		std::cout << "No suitable room found!" << std::endl;
 }
 
-void  ControlPanel::unavailable(const std::string& args) {
-	auto tokens = TextUtilities::extractTokens(args);
+/**
+ * @brief			   Makes room unavailable for guests during given period
+ *
+ * @param [in]  str    String to be read from
+ *
+ */
+
+void  HotelManager::unavailable(const std::string& str) {
+	auto tokens = TextUtilities::extractTokens(str);
 
 	int room = std::stoi(tokens.at(0));
 	Date* start = TextUtilities::extractDate(tokens.at(1));
@@ -190,35 +290,68 @@ void  ControlPanel::unavailable(const std::string& args) {
 
 	if (validate(*start, *end)) {
 		std::string note = tokens.at(3);
-		TextUtilities::extractContent(note);
+		TextUtilities::removeFirstAndLastElement(note);
 		hotel->makeReservation(room, start, end, note, 0);
 	}
 }
 
-void  ControlPanel::printAvailableActivities() const {
+/**
+ * @brief	 Prints available hotel activities
+ *
+ */
+
+void  HotelManager::printAvailableActivities() const {
 	for (const auto& activity : hotel->getAllActivities())
 		std::cout << activity << std::endl;
 }
 
-void  ControlPanel::subscribe(const std::string& args) {
-	auto tokens = TextUtilities::extractTokens(args);
+/**
+ * @brief			 Subscribe given room for given activity
+ *
+ * @param [in]  str  String to be read from
+ *
+ */
+
+void  HotelManager::subscribe(const std::string& str) {
+	auto tokens = TextUtilities::extractTokens(str);
 
 	int room = std::stoi(tokens.at(0));
 	std::string activity = tokens.at(1);
 	hotel->subscribeRoom(room, activity);
 }
 
-void  ControlPanel::printRoomActivities(const std::string& args) const {
-	int room = std::stoi(args);
+/**
+ * @brief			 Prints all activites room currently has subscribed for
+ *
+ * @param [in]  str  String to be read from
+ *
+ */
+
+void  HotelManager::printRoomActivities(const std::string& str) const {
+	int room = std::stoi(str);
 	hotel->printRoomActivities(room);
 }
 
-void  ControlPanel::printActivitySubscribers(const std::string& args) const {
-	std::string activity = args;
+/**
+ * @brief			 Prints all rooms currently has subscribed for given acitivity. 
+ *
+ * @param [in]  str  String to be read from
+ *
+ */
+
+void  HotelManager::printActivitySubscribers(const std::string& str) const {
+	std::string activity = str;
 	hotel->printSubscribedRooms(activity);
 }
 
-void ControlPanel::readFile(const std::string& file) {
+/**
+ * @brief			  Reads data from specified file 
+ *
+ * @param [in]  file  Text file to read from
+ *
+ */
+
+void HotelManager::readFile(const std::string& file) {
 	std::ifstream myFile(file, std::ios::in);
 
 	if (!myFile.is_open()) {
@@ -234,7 +367,7 @@ void ControlPanel::readFile(const std::string& file) {
 		readLine(line);
 	}
 
-	if (hotel->isEmpty()) {
+	if (!hotel->hasRooms()) {
 		generateHotelRooms();
 		std::cout << "No valid hotel data was found. Generated 11-room hotel with rooms 100-110!" << std::endl;
 	}
@@ -244,7 +377,16 @@ void ControlPanel::readFile(const std::string& file) {
 	myFile.close();
 }
 
-void ControlPanel::readLine(std::string& line) {
+/**
+ * @brief			  Read hotel data from given text file line. If any invalid data token is met
+ * 					  the function skips it and continues with the next one
+ *
+ * @param [in]  line  Line of text to be read from
+ *
+ * @throws			  std::out_of_range exception if line is not in expected format
+ */
+
+void HotelManager::readLine(std::string& line) {
 	TextUtilities::trim(line);
 
 	if (!validateLine(line))
@@ -256,34 +398,72 @@ void ControlPanel::readLine(std::string& line) {
 
 	for (size_t i = 2; i < tokens.size(); ++i) {
 		auto record = tokens.at(i);
-		TextUtilities::extractContent(record);
+		TextUtilities::removeFirstAndLastElement(record);
 		if (validateRecord(record)) {
 			readRecord(room, record);
 		}
 	}
 }
 
-void ControlPanel::generateHotelRooms() {
+/**
+ * @brief	Generating hotel with 2-,3- and 4-sized rooms with numbers
+ * 			from 100 to 110, incuding.
+ *
+ */
+
+void HotelManager::generateHotelRooms() {
 	for (int roomNumber = 100; roomNumber <= 110; ++roomNumber) {
 		int capacity = (roomNumber % 4 == 0) ? 4 : (roomNumber % 3 == 0) ? 3 : 2;
 		hotel->addRoom(roomNumber, capacity);
 	}
 }
 
-void ControlPanel::readRecord(int room, const std::string& record) {
+/**
+ * @brief				      Read reservation data from given text. Text format should be specified exactly
+ * 							  as in help menu list and the corresponding regex map
+ *
+ * @param [in]  roomNumber    Number of room corresponding to the given reservation
+ *
+ *  @param [in]  record       Text record to be read from
+ *
+ *  @throws					  std::out_of_range exception if line is not in expected format
+ *  											
+ */
+
+void HotelManager::readRecord(int roomNumber, const std::string& record) {
 	auto data = TextUtilities::extractTokens(record);
 	Date* start = TextUtilities::extractDate(data.at(0));
 	Date* end = TextUtilities::extractDate(data.at(1));
 	std::string note = data.at(2);
 	int guests = std::stoi(data.at(3));
-	TextUtilities::extractContent(note);
-	hotel->makeReservation(room, start, end, note, guests);
+	TextUtilities::removeFirstAndLastElement(note);
+	hotel->makeReservation(roomNumber, start, end, note, guests);
 }
+
+/**
+ * @brief			Checks if given text line matches the regular expression pattern 
+ * 					for text file hotel record as specified in the documentation
+ *
+ * @param 	line	Text line to be checked
+ *
+ * @returns			True if the line matches the regular expression, false if otherwise
+ * 					
+ */
 
 bool validateLine(const std::string& line) {
 	const std::regex regex("[0-9]+ [0-9]+( \\{.*\\})*", ECMAScript);
 	return std::regex_match(line, regex);
 }
+
+/**
+ * @brief			 Checks if given text  matches the regular expression pattern
+ * 					 for reservation record as specified in the documentation
+ *
+ * @param 	record	 Text record to be checked
+ *
+ * @returns			 True if the record matches the regular expression, false if otherwise
+ *
+ */
 
 bool validateRecord(const std::string& record) {
 	const std::regex regex(DATE + " " + DATE + " " + QUOTED_TEXT + " " + NUM, ECMAScript);

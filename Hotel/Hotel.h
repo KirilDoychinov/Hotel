@@ -6,6 +6,14 @@
 #include<string>
 #include <optional>
 
+/**
+ * @class  Hotel
+ *
+ * @brief  Class representing an hotel enity with  list of hotel rooms
+ * 		   and list of available sport activities
+ *
+ */
+
 class Hotel
 {
 public:
@@ -18,11 +26,11 @@ public:
 	void makeReservation(int room, Date* start, Date* end, std::string& note, int guests = -1);
 	void emptyRoom(int room);
 
-	bool isEmpty() const;
+	bool hasRooms() const;
 	bool hasRoom(int number) const;
 
 	void printAvailableRooms(Date* date) const;
-	void report(Date* start, Date* end) const;
+	void printRoomsUsage(Date* start, Date* end) const;
 	std::optional<int> findAvailabeRoom(int beds, Date* start, Date* end) const;
 	void printRoomActivities(int room) const;
 	void printSubscribedRooms(const std::string& activity) const;
@@ -33,11 +41,19 @@ public:
 	friend std::ostream& operator<<(std::ostream&, const Hotel&);
 
 private:
+	
+	/**
+	 * List of existing hotel rooms
+	 */
 	std::vector<Room*> rooms;
+
+	/**
+	 * List of existing hotel activities
+	 */
 	const std::set <std::string> activities = { "football", "golf","yoga","swimming","volleyball","squash", "tennis" };
 
-	Room* findRoom(int number) const;
-	bool validateActivity(const std::string& activity) const;
+	Room* findRoom(int roomNumber) const;
+	bool hasActivity(const std::string& activity) const;
 };
 
 #endif

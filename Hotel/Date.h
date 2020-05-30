@@ -3,10 +3,17 @@
 
 #include <fstream>
 
+/**
+ * @class	Date
+ *
+ * @brief	Class representing a calender date with days, months and years after
+ * 			AD (Anno Domini, or 0 years onwards) using Gregorian calendar
+ */
+
 class Date
 {
 public:
-	Date(int day, int month, int year);
+	Date(unsigned int day, unsigned int month, unsigned int year);
 	Date(const Date& other);
 	~Date();
 
@@ -27,9 +34,20 @@ public:
 	static Date* today();
 
 private:
-	int day;
-	int month;
-	int year;
+	/**
+	 * Calendar day (1-31)
+	 */
+	unsigned int day;
+
+	/**
+	 * Calendar month (1-12)
+	 */
+	unsigned int month;
+
+	/**
+	 * Calendar year (0- onwards)
+	 */
+	unsigned int year;
 };
 
 #endif
