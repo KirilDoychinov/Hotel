@@ -64,12 +64,12 @@ private:
 	const std::map < std::string, std::pair<std::string, std::function<void(const std::string&)>>> commandsWithArguments = {
 		{ "saveas", std::pair(TXTFILE,std::bind(&HotelManager::saveAs, this,_1))},
 		{ "checkin", std::pair(NUM + " " + DATE + " " + DATE + " " + QUOTED_TEXT + OPT_NUM,std::bind(&HotelManager::checkin, this,_1))},
-		{ "availability", std::pair(OPT_DATE,std::bind(&HotelManager::availability, this, _1))},
+		{ "availability", std::pair(OPT_DATE,std::bind(&HotelManager::printAvailableRooms, this, _1))},
 		{ "checkout", std::pair(NUM,std::bind(&HotelManager::checkout, this, _1))},
-		{ "report", std::pair(DATE + " " + DATE,std::bind(&HotelManager::report, this, _1))},
-		{ "find", std::pair(NUM + " " + DATE + " " + DATE,std::bind(&HotelManager::find, this, _1))},
-		{ "unavailable", std::pair(NUM + " " + DATE + " " + DATE + " " + QUOTED_TEXT,std::bind(&HotelManager::unavailable, this, _1))},
-		{ "subscribe", std::pair(NUM + " " + WORD,std::bind(&HotelManager::subscribe, this,_1))},
+		{ "report", std::pair(DATE + " " + DATE,std::bind(&HotelManager::reportRoomUsage, this, _1))},
+		{ "find", std::pair(NUM + " " + DATE + " " + DATE,std::bind(&HotelManager::findSuitableRoom, this, _1))},
+		{ "unavailable", std::pair(NUM + " " + DATE + " " + DATE + " " + QUOTED_TEXT,std::bind(&HotelManager::closeRoomTemporarily, this, _1))},
+		{ "subscribe", std::pair(NUM + " " + WORD,std::bind(&HotelManager::subscribeForSport, this,_1))},
 		{ "activities", std::pair(NUM,std::bind(&HotelManager::printRoomActivities, this, _1))},
 		{ "subs", std::pair(WORD,std::bind(&HotelManager::printActivitySubscribers, this, _1))}
 	};
@@ -83,12 +83,12 @@ private:
 
 	void checkin(const std::string& args);
 	void checkout(const std::string& args);
-	void report(const std::string& args) const;
-	void find(const std::string& args) const;
-	void availability(const std::string& args = "") const;
-	void unavailable(const std::string& args);
+	void reportRoomUsage(const std::string& args) const;
+	void findSuitableRoom(const std::string& args) const;
+	void printAvailableRooms(const std::string& args = "") const;
+	void closeRoomTemporarily(const std::string& args);
 	void printAvailableActivities() const;
-	void subscribe(const std::string& args);
+	void subscribeForSport(const std::string& args);
 	void printRoomActivities(const std::string& args) const;
 	void printActivitySubscribers(const std::string& args) const;
 

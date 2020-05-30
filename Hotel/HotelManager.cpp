@@ -220,7 +220,7 @@ void HotelManager::checkin(const std::string& str) {
  *
  */
 
-void HotelManager::availability(const std::string& str) const {
+void HotelManager::printAvailableRooms(const std::string& str) const {
 	Date* date = str.empty() ? Date::today() : TextUtilities::extractDate(str);
 	hotel->printAvailableRooms(date);
 }
@@ -244,7 +244,7 @@ void HotelManager::checkout(const std::string& str) {
  *
  */
 
-void HotelManager::report(const std::string& str) const {
+void HotelManager::reportRoomUsage(const std::string& str) const {
 	auto dates = TextUtilities::extractTokens(str);
 	Date* start = TextUtilities::extractDate(dates.at(0));
 	Date* end = TextUtilities::extractDate(dates.at(1));
@@ -260,7 +260,7 @@ void HotelManager::report(const std::string& str) const {
  *
  */
 
-void HotelManager::find(const std::string& str) const {
+void HotelManager::findSuitableRoom(const std::string& str) const {
 	auto tokens = TextUtilities::extractTokens(str);
 
 	int bedsNeeded = std::stoi(tokens.at(0));
@@ -281,7 +281,7 @@ void HotelManager::find(const std::string& str) const {
  *
  */
 
-void  HotelManager::unavailable(const std::string& str) {
+void  HotelManager::closeRoomTemporarily(const std::string& str) {
 	auto tokens = TextUtilities::extractTokens(str);
 
 	int room = std::stoi(tokens.at(0));
@@ -306,13 +306,13 @@ void  HotelManager::printAvailableActivities() const {
 }
 
 /**
- * @brief			 Subscribe given room for given activity
+ * @brief			 Subscribe given room for given sport activity
  *
  * @param [in]  str  String to be read from
  *
  */
 
-void  HotelManager::subscribe(const std::string& str) {
+void  HotelManager::subscribeForSport(const std::string& str) {
 	auto tokens = TextUtilities::extractTokens(str);
 
 	int room = std::stoi(tokens.at(0));
@@ -368,8 +368,9 @@ void HotelManager::readFile(const std::string& file) {
 	}
 
 	if (!hotel->hasRooms()) {
-		generateHotelRooms();
 		std::cout << "No valid hotel data was found. Generated 11-room hotel with rooms 100-110!" << std::endl;
+		generateHotelRooms();
+		
 	}
 	else
 		std::cout << "Hotel data succesfully read!" << std::endl;
